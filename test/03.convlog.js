@@ -631,6 +631,41 @@ suite('convlog()', ()=>{
         });
     });
 
+    suite('三麻', ()=>{
+        suite('UN', ()=>{
+            let xml = '<UN n0="%E5%B0%B1%E6%B4%BB%E7%94%9F%40%E5%B7%9D%E6%9D%91%E8%BB%8D%E5%9B%A3" n1="%41%53%41%50%49%4E" n2="%E2%93%85%E5%A0%80%E5%86%85%E6%AD%A3%E4%BA%BA" n3="" dan="20,20,0,0" rate="2325.68,2260.51,1500.00,1500.00" sx="M,F,M,C"/>';
+            test('4人目', ()=>{
+                assert.equal(convlog(xml).player[3], '')});
+            test('4人目以外', ()=>{
+                assert.equal(convlog(xml).player[2], 'Ⓟ堀内正人\n(新人 R1500)')});
+        });
+
+        suite('INIT', ()=>{
+            let xml = '<GO type="185"/>'
+                    + '<TAIKYOKU oya="1"/>'
+                    + '<INIT seed="1,0,0,2,1,82" ten="300,420,330,0" oya="1" hai0="71,67,53,114,88,3,95,117,126,118,84,91,2" hai1="96,61,86,94,125,42,92,55,116,102,93,73,36" hai2="109,98,49,1,62,87,38,63,37,129,69,50,79" hai3=""/>';
+
+            test('配牌', ()=>{
+                    assert.deepEqual(last_log(convlog(xml)).qipai.shoupai,
+                                     [ 'p1257s1466678z35',
+                                       'm1p1144779s247z16',
+                                       'm11p589s4056z2335',
+                                       '' ])});
+        });
+
+        suite('N', ()=>{
+            let xml = '<GO type="185"/>'
+                    + '<TAIKYOKU oya="1"/>'
+                    + '<INIT seed="1,0,0,2,1,82" ten="300,420,330,0" oya="1" hai0="71,67,53,114,88,3,95,117,126,118,84,91,2" hai1="96,61,86,94,125,42,92,55,116,102,93,73,36" hai2="109,98,49,1,62,87,38,63,37,129,69,50,79" hai3=""/>';
+
+            test('北抜き', ()=>{
+                assert.deepEqual(
+                    last_log(convlog(xml+'<N who="0" m="31008"/>')),
+                    {bei:{l:2}});
+            });
+        })
+    });
+
     suite('OTHER', ()=>{
         let xml = '<OTHER/>';
         test('パーズできること', ()=>assert.ok(convlog(xml)));
