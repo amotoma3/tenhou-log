@@ -41,7 +41,7 @@ suite('convlog()', ()=>{
         test('喰断ナシ', ()=>{
             assert.equal(convlog('<GO type="5"/>').title,   '四般東赤')});
         test('三麻', ()=>{
-            assert.throws(()=>{convlog('<GO type="17"/>')})});
+            assert.equal(convlog('<GO type="17"/>').title,   '三般東喰赤')});
         test('テストプレイ', ()=>{
             assert.equal(convlog('<GO type="0"/>').title,   '四般東喰赤－')});
         test('ログIDつき', ()=>{
