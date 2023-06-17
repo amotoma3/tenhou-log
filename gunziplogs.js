@@ -17,14 +17,17 @@ const argv = yargs
   .option("json", { alias: "j", description: "Json conversion (optional)" })
   .demandOption("input", "output").argv;
 
-const gunzip = (input_filepath, filename) => {
-  const output_filepath = path.join(argv.output, filename);
+const gunzip = (input_filepath, basename) => {
+  const output_filepath = path.join(
+    argv.output,
+    basename + (argv.json ? ".json" : ".xml")
+  );
 
   const content = zlib.gunzipSync(fs.readFileSync(input_filepath));
   if (argv.json) {
     fs.writeFileSync(
       output_filepath,
-      JSON.stringify(convlog(content.toString()))
+      JSON.stringify(convlog(content.toString(), basename))
     );
   } else {
     fs.writeFileSync(output_filepath, content);
@@ -38,10 +41,7 @@ const gunzip_mjlogs = () => {
   fs.readdirSync(argv.input)
     .filter((filename) => filename.match(/\.mjlog$/))
     .forEach((filename) =>
-      gunzip(
-        path.join(argv.input, filename),
-        filename.replace(/&.*$/, argv.json ? ".json" : ".xml")
-      )
+      gunzip(path.join(argv.input, filename), filename.replace(/&.*$/, ""))
     );
 };
 
