@@ -4,7 +4,7 @@
 
 const yargs   = require('yargs');
 const express = require('express');
-const getlog  = require('./lib/getlog');
+const getlog  = require('./lib/getlog')();
 const convlog = require('./lib/convlog');
 
 const argv = yargs
@@ -21,14 +21,15 @@ const docs = argv.docroot;
 
 const app = express();
 
-app.get(`${base}:id.json(\::title)?`, (req, res, next)=>{
+app.get(`${base}:id.json:title(:.{0,})?`, (req, res, next)=>{
     let id = req.params.id;
-    let title = req.params.title ? ':' + req.params.title : id;
+    let title = req.params.title || id;
     getlog(id)
         .then(xml=>res.json(convlog(xml, title)))
         .catch(e=>{
-            if (e == 404) next();
-            else          res.status(415).send(`<h1>${e.message}</h1>`);
+            if      (e == 404) next();
+            else if (e == 500) res.status(502).send(`<h1>Bad Gateway</h1>`)
+            else               res.status(415).send(`<h1>${e.message}</h1>`);
         });
 });
 app.get(`${base}:id.xml`, (req, res, next)=>{
